@@ -1,3 +1,0 @@
-[submodule "inventory/hosts"]
-	path = inventory/hosts
-	url = https://github.com/Marck/ansible_inventory.git

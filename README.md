@@ -1,4 +1,4 @@
-# Configure Raspberry PIs as Kubernetes clusters
+# Ansible role: Configure Raspberry PIs as Kubernetes clusters
 
 ## A fair note
 
