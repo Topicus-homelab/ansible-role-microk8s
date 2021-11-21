@@ -1,0 +1,12 @@
+- name: Install microk8s with snap modules
+  community.general.snap:
+    name: microk8s
+    state: present
+    classic: yes
+  register: snap_install_microk8s
+
+# - name: Enable helm, dns, rbac
+#   shell: >
+#     microk8s.enable helm
+#     microk8s.enable dns
+#     microk8s.enable rbac

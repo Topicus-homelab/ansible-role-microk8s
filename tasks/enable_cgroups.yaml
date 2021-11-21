@@ -1,0 +1,21 @@
+# Kubernetes relies on cgroups for enforcing limits for the containers, so kernel needs to be booted with cgroups support.
+- name: "Get file contents of /boot/firmware/cmdline.txt"
+  ansible.builtin.shell: cat /boot/firmware/cmdline.txt
+  changed_when: false
+  register: cgroups_contents
+
+- name: "Append cgroups settings to /boot/firmware/cmdline.txt"
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/cmdline.txt
+    backrefs: yes
+    regexp: "^(.*net.ifnames.*)$"
+    line: '\1 cgroup_enable=memory swapaccount=1 cgroup_memory=1 cgroup_enable=cpuset' # The \1 makes sure the line is inserted on the same line as the current text
+  when: cgroups_contents.stdout.find('cgroup_enable=memory swapaccount=1 cgroup_memory=1 cgroup_enable=cpuset') == -1
+  register: cgroups_changed
+
+- name: "Rebooting server if cgroups file is changed"
+  become: true
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible"
+    reboot_timeout: 600
+  when: cgroups_changed.changed

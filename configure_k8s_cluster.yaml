@@ -1,0 +1,42 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: All | Enable cgroups 
+      import_tasks: tasks/enable_cgroups.yaml
+    
+    - name: All | Install microk8s
+      import_tasks: tasks/install_microk8s.yaml
+
+- hosts: master
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Master | Add master 
+      shell: microk8s.add-node
+      register: microk8s_master_election
+    
+    - set_fact:
+        microk8s_join_cmd: "{{ microk8s_master_election.stdout | regex_search('microk8s join.*') }}"
+
+- hosts: workers
+  gather_facts: true
+  tasks:
+    - name: workers | Add worker nodes 
+      shell: "{{ hostvars[groups['master'][0]].microk8s_join_cmd }}"
+      register: microk8s_workers_election
+
+    - debug:
+        var: microk8s_workers_election
+
+- hosts: master
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Master | Check nodes 
+      shell: microk8s.kubectl get node
+      register: microk8s_check_nodes
+    
+    - debug:
+        var: microk8s_check_nodes
