@@ -5,6 +5,13 @@
     classic: yes
   register: snap_install_microk8s
 
+# Untested
+- name: Start microk8s and enable on boot
+  shell: >
+    microk8s start
+    microk8s status
+    snap enable microk8s
+
 # - name: Enable helm, dns, rbac
 #   shell: >
 #     microk8s.enable helm

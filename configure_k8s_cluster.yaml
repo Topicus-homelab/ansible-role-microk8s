@@ -35,7 +35,7 @@
   gather_facts: false
   tasks:
     - name: Master | Check nodes 
-      shell: microk8s.kubectl get node
+      shell: microk8s kubectl get node
       register: microk8s_check_nodes
     
     - debug:
